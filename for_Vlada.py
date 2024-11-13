@@ -2,6 +2,8 @@ from tkinter import *
 import requests as r
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
+import pyperclip
+
 
 
 def load_file():
@@ -11,7 +13,9 @@ def load_file():
             answer = r.post("https://file.io", files={"file" : open(file, "rb")})
             if answer.status_code == 200:
                 link_file = answer.json()["link"]
+                e.delete(0, END)
                 e.insert(0, link_file)
+                pyperclip.copy(link_file)
             else:
                 print("Не удалось связаться с file.io")
     except Exception as exc:
