@@ -3,6 +3,18 @@ import requests as r
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 import pyperclip
+import os
+import json
+
+
+def save_files(path_file, link_file, name_file):
+    history = []
+    if os.path.exists("History.json"):
+        with open("History.json", "r", encoding="utf-8") as f:
+            history = json.load(f)
+    history.append({"path_file":path_file, "name_file":name_file, "link_file": link_file})
+    with open("History.json", "w", encoding="windows-1251") as f:
+        json.dump(history, f, indent=4)
 
 
 
@@ -13,9 +25,11 @@ def load_file():
             answer = r.post("https://file.io", files={"file" : open(file, "rb")})
             if answer.status_code == 200:
                 link_file = answer.json()["link"]
+                name_file = answer.json()['name']
                 e.delete(0, END)
                 e.insert(0, link_file)
                 pyperclip.copy(link_file)
+                save_files(file, link_file, name_file)
             else:
                 print("Не удалось связаться с file.io")
     except Exception as exc:
